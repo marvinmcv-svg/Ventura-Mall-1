@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  source    String   @default("landing")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  level       String
+  description String
+  color       String   @default("bg-ink")
+  textOn      String   @default("light")
+  featured    Boolean  @default(false)
+  logoUrl     String?
+  phone       String?
+  website     String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("stores")
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  description String
+  image       String
+  badge       String
+  accent      String   @default("coral")
+  highlights  String
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("experiences")
+}
+
+model Promo {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  date        String
+  accent      String   @default("coral")
+  emoji       String   @default("✨")
+  image       String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("promos")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   @default("General")
+  date        DateTime
+  endDate     DateTime?
+  location    String?
+  image       String?
+  accent      String   @default("coral")
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("events")
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String
+  image     String
+  caption   String?
+  category  String   @default("General")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("gallery_items")
+}
+
+model Movie {
+  id          String   @id @default(cuid())
+  title       String
+  format      String   @default("2D")
+  genre       String?
+  duration    Int?
+  rating      String?
+  poster      String?
+  synopsis    String?
+  showtimes   String
+  ticketUrl   String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("movies")
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String   @default("General")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("faq_items")
+}
+
+model SiteSetting {
+  id    String @id
+  value String
+  @@map("site_settings")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  username  String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  @@map("admin_sessions")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String
+  entity     String
+  entityId   String?
+  entityName String?
+  username   String
+  details    String?
+  createdAt  DateTime @default(now())
+  @@index([createdAt])
+  @@index([entity])
+  @@map("activity_logs")
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  referrer  String?
+  country   String?
+  device    String?
+  sessionId String?
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+  @@index([path])
+  @@map("page_views")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String   @default("General")
+  message   String
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("contact_messages")
+}
