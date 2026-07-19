@@ -1,72 +1,108 @@
 "use client";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { HelpCircle, ChevronDown, Send, Loader2, MessageCircle } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useMemo } from "react";
+import { ArrowRight } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useContent } from "@/lib/content-context";
-import { useToast } from "@/hooks/use-toast";
+import {
+  SectionHeading,
+  Reveal,
+  StaggerGroup,
+  StaggerItem,
+} from "@/components/site/primitives";
+import { fadeUpSm } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+
 export function Faq() {
   const { content } = useContent();
   const faqs = content.faqs;
-  const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [sending, setSending] = useState(false);
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (sending) return;
-    setSending(true);
-    try {
-      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const data = await res.json();
-      if (data?.ok) { toast({ title: "¡Mensaje enviado!", description: data.message }); setForm({ name: "", email: "", message: "" }); }
-      else throw new Error(data?.error);
-    } catch (err: any) { toast({ variant: "destructive", title: "Error", description: err.message }); }
-    finally { setSending(false); }
-  };
+  const [active, setActive] = useState<string>("Todas");
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(faqs.map((f) => f.category).filter(Boolean)));
+    return ["Todas", ...cats];
+  }, [faqs]);
+
+  const filtered = active === "Todas" ? faqs : faqs.filter((f) => f.category === active);
+
   if (!faqs.length) return null;
-  const categories = [...new Set(faqs.map((f) => f.category))];
+
   return (
-    <section id="faq" className="py-20 lg:py-28 scroll-mt-20 bg-muted/30">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider"><HelpCircle className="h-3.5 w-3.5" />Preguntas frecuentes</span>
-          <h2 className="mt-4 font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-ink tracking-tight text-balance">Todo lo que necesitas saber</h2>
-          <p className="mt-3 text-muted-foreground text-pretty">¿No encuentras tu respuesta? Escríbenos usando el formulario abajo.</p>
-        </div>
-        <div className="grid lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3">
-            {categories.map((cat) => (
-              <div key={cat} className="mb-6">
-                <h3 className="font-display font-bold text-sm text-primary uppercase tracking-wider mb-3">{cat}</h3>
-                <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.4 }}>
-                  <Accordion type="single" collapsible className="space-y-2">
-                    {faqs.filter((f) => f.category === cat).map((f) => (
-                      <AccordionItem key={f.id} value={f.id} className="rounded-xl border border-border bg-card px-4 data-[state=open]:shadow-md transition-shadow">
-                        <AccordionTrigger className="text-left font-semibold text-ink hover:no-underline py-4 [&[data-state=open]>svg]:rotate-180"><span className="flex-1">{f.question}</span><ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" /></AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">{f.answer}</AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </motion.div>
-              </div>
+    <section id="faq" className="scroll-mt-20 bg-background py-20 lg:py-28">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading
+          eyebrow="FAQ"
+          title="Todo lo que necesitas saber antes de venir"
+          description="Respuestas claras a las preguntas que más nos hacen. Si algo te queda en el aire, escríbenos más abajo."
+          align="center"
+          accent="red"
+        />
+
+        {/* Category filter pills */}
+        {categories.length > 1 && (
+          <Reveal delay={0.1}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActive(cat)}
+                  aria-pressed={active === cat}
+                  className={cn(
+                    "h-10 px-4 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide-sm transition-all border min-w-[44px]",
+                    active === cat
+                      ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+                      : "bg-transparent text-foreground/70 border-border hover:border-foreground/40 hover:text-foreground"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </Reveal>
+        )}
+
+        {/* Accordion */}
+        <StaggerGroup className="mt-10" stagger={0.05}>
+          <Accordion type="single" collapsible className="w-full">
+            {filtered.map((f) => (
+              <StaggerItem key={f.id} variant={fadeUpSm}>
+                <AccordionItem
+                  value={f.id}
+                  className="group border-border/60 border-b first:border-t-0 data-[state=open]:border-primary/40 transition-colors"
+                >
+                  <AccordionTrigger className="py-5 sm:py-6 px-1 sm:px-2 text-left hover:no-underline items-start">
+                    <span className="flex-1 font-display font-semibold text-base sm:text-lg lg:text-xl text-ink leading-snug pr-4 text-balance">
+                      {f.question}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 sm:px-2 pb-6 text-sm sm:text-base text-muted-foreground leading-relaxed text-pretty">
+                    <div className="border-l-2 border-primary/40 pl-4 sm:pl-5">
+                      {f.answer}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </StaggerItem>
             ))}
+          </Accordion>
+        </StaggerGroup>
+
+        {/* Closing CTA */}
+        <Reveal delay={0.15}>
+          <div className="mt-12 flex items-center justify-center">
+            <a
+              href="#contacto"
+              className="group inline-flex items-center gap-2 text-sm sm:text-base text-foreground/70 hover:text-primary transition-colors text-center"
+            >
+              <span>¿No encuentras tu respuesta? Escríbenos usando el formulario de contacto.</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 shrink-0" />
+            </a>
           </div>
-          <div className="lg:col-span-2">
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.5 }} className="lg:sticky lg:top-24 rounded-2xl border border-border bg-card p-6 shadow-lg shadow-ink/5">
-              <div className="flex items-center gap-2 mb-1"><MessageCircle className="h-5 w-5 text-primary" /><h3 className="font-display font-bold text-lg text-ink">¿Tienes una pregunta?</h3></div>
-              <p className="text-sm text-muted-foreground mb-4">Envíanos un mensaje y te responderemos pronto.</p>
-              <form onSubmit={submit} className="space-y-3">
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Tu nombre" required className="h-10" />
-                <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Tu correo electrónico" required className="h-10" />
-                <Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Escribe tu mensaje..." required rows={4} />
-                <Button type="submit" disabled={sending} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">{sending ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Enviando...</> : <><Send className="h-4 w-4 mr-2" />Enviar mensaje</>}</Button>
-              </form>
-            </motion.div>
-          </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

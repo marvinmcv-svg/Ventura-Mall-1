@@ -15,6 +15,7 @@ import { Faq } from "@/components/site/faq";
 import { Newsletter } from "@/components/site/newsletter";
 import { SiteFooter } from "@/components/site/footer";
 import { ScrollProgress } from "@/components/site/scroll-progress";
+import { CustomCursor } from "@/components/site/primitives";
 import { AdminPortal } from "@/components/admin/admin-portal";
 import { AdminTrigger } from "@/components/admin/admin-trigger";
 import { ClientContentProvider } from "@/components/site/client-content-provider";
@@ -25,6 +26,7 @@ export default function Home() {
     <ClientContentProvider>
       <div className="flex min-h-screen flex-col bg-background">
         <PageTracker />
+        <CustomCursor />
         <ScrollProgress />
         <SiteHeader />
         <main className="flex-1">
