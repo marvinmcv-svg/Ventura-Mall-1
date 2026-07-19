@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -33,7 +33,7 @@ export function Faq() {
 
   return (
     <section id="faq" className="scroll-mt-20 bg-background py-20 lg:py-28">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="FAQ"
           title="Todo lo que necesitas saber antes de venir"
@@ -42,7 +42,7 @@ export function Faq() {
           accent="red"
         />
 
-        {/* Category filter pills */}
+        {/* Category filter — slim editorial chips */}
         {categories.length > 1 && (
           <Reveal delay={0.1}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
@@ -53,10 +53,10 @@ export function Faq() {
                   onClick={() => setActive(cat)}
                   aria-pressed={active === cat}
                   className={cn(
-                    "h-10 px-4 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide-sm transition-all border min-w-[44px]",
+                    "h-9 px-4 rounded-lg text-[0.7rem] sm:text-xs font-semibold uppercase tracking-wide-sm transition-all border min-w-[44px]",
                     active === cat
-                      ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
-                      : "bg-transparent text-foreground/70 border-border hover:border-foreground/40 hover:text-foreground"
+                      ? "bg-ink text-white border-ink shadow-sm"
+                      : "bg-card text-foreground/75 border-border hover:border-ink/40 hover:text-ink"
                   )}
                 >
                   {cat}
@@ -66,21 +66,24 @@ export function Faq() {
           </Reveal>
         )}
 
-        {/* Accordion */}
-        <StaggerGroup className="mt-10" stagger={0.05}>
+        {/* Accordion — clean cards, hover + open affordances */}
+        <StaggerGroup className="mt-8 sm:mt-10 space-y-2.5" stagger={0.05}>
           <Accordion type="single" collapsible className="w-full">
             {filtered.map((f) => (
               <StaggerItem key={f.id} variant={fadeUpSm}>
                 <AccordionItem
                   value={f.id}
-                  className="group border-border/60 border-b first:border-t-0 data-[state=open]:border-primary/40 transition-colors"
+                  className="group rounded-xl border border-border/70 bg-card px-5 sm:px-6 transition-all duration-300 hover:border-ink/25 data-[state=open]:border-primary/40 data-[state=open]:shadow-[0_8px_30px_-12px_oklch(0.55_0.218_28/0.25)] overflow-hidden first:border-t"
                 >
-                  <AccordionTrigger className="py-5 sm:py-6 px-1 sm:px-2 text-left hover:no-underline items-start">
-                    <span className="flex-1 font-display font-semibold text-base sm:text-lg lg:text-xl text-ink leading-snug pr-4 text-balance">
+                  <AccordionTrigger className="py-5 sm:py-6 text-left hover:no-underline items-center gap-4 [&>svg]:hidden">
+                    <span className="flex-1 font-display font-semibold text-base sm:text-lg lg:text-xl text-ink leading-snug pr-2 text-balance">
                       {f.question}
                     </span>
+                    <span className="grid place-items-center h-8 w-8 shrink-0 rounded-full border border-border text-ink/60 transition-all duration-300 group-data-[state=open]:rotate-45 group-data-[state=open]:border-primary group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground">
+                      <Plus className="h-4 w-4" />
+                    </span>
                   </AccordionTrigger>
-                  <AccordionContent className="px-1 sm:px-2 pb-6 text-sm sm:text-base text-muted-foreground leading-relaxed text-pretty">
+                  <AccordionContent className="pb-6 text-sm sm:text-base text-muted-foreground leading-relaxed text-pretty">
                     <div className="border-l-2 border-primary/40 pl-4 sm:pl-5">
                       {f.answer}
                     </div>

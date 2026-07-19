@@ -65,18 +65,11 @@ export function SiteFooter() {
           {/* Col 1: Brand */}
           <StaggerItem variant={fadeUpSm} className="sm:col-span-2 lg:col-span-1">
             <Link href="#inicio" className="flex items-center gap-3">
-              <span className="grid place-items-center h-12 w-12 rounded-2xl bg-primary text-primary-foreground font-display font-extrabold text-2xl shadow-lg shadow-primary/30">
-                V
-              </span>
-              <span className="flex flex-col leading-none">
-                <span className="font-display font-extrabold text-2xl text-white tracking-tight">
-                  {settings.siteName || "Ventura Mall"}
-                </span>
-                <span className="text-[0.65rem] font-semibold uppercase tracking-editorial text-gold mt-1.5">
-                  {settings.tagline || "Vive la experiencia"}
-                </span>
-              </span>
+              <img src="/ventura-logo.png" alt="Ventura Mall" className="h-10 w-auto brightness-0 invert" />
             </Link>
+            <span className="mt-2 text-[0.65rem] font-semibold uppercase tracking-editorial text-gold">
+              {settings.tagline || "Vive la experiencia"}
+            </span>
             <p className="mt-5 text-sm text-white/60 max-w-sm text-pretty leading-relaxed">
               El centro comercial más grande de Bolivia. Una ciudad bajo techo con moda,
               gastronomía, cine y entretenimiento para toda la familia en el corazón de

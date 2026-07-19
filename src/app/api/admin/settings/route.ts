@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/activity";
 import { db } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export async function PUT(req: NextRequest) {
     if (!incoming || typeof incoming !== "object") return NextResponse.json({ ok: false, error: "Se requiere { settings: {...} }" }, { status: 400 });
     const keys = Object.keys(incoming);
     for (const k of keys) { const v = String(incoming[k] ?? ""); await db.siteSetting.upsert({ where: { id: k }, update: { value: v }, create: { id: k, value: v } }); }
+    await logActivity({ action: "update", entity: "settings", username: auth.username, details: `${keys.length} campos` });
     return NextResponse.json({ ok: true, updated: keys.length });
   } catch (error) { console.error("[settings PUT]", error); return NextResponse.json({ ok: false, error: "Error al guardar" }, { status: 500 }); }
 }

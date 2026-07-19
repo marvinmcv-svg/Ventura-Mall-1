@@ -20,6 +20,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ ok: false, error: "No autorizado" }, { status: 401 });
-  try { const { id } = await params; await db.contactMessage.delete({ where: { id } }); await logActivity({ action: "delete", entity: "message", entityId: id, username: auth.username }); return NextResponse.json({ ok: true }); }
+  try { const { id } = await params; const msg = await db.contactMessage.findUnique({ where: { id }, select: { email: true, subject: true } }); await db.contactMessage.delete({ where: { id } }); await logActivity({ action: "delete", entity: "message", entityId: id, entityName: msg?.email || msg?.subject || null, username: auth.username }); return NextResponse.json({ ok: true }); }
   catch (error) { console.error("[messages DELETE]", error); return NextResponse.json({ ok: false, error: "Error" }, { status: 500 }); }
 }

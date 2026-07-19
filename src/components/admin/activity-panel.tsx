@@ -15,7 +15,7 @@ export function ActivityPanel() {
   return (
     <div>
       <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="flex flex-wrap gap-1.5">{["all", "store", "event", "promo", "gallery", "movie", "settings", "auth"].map((f) => <button key={f} onClick={() => setFilter(f)} className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border", filter === f ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground")}>{f === "all" ? "Todo" : entityLabels[f] || f}</button>)}</div>
+        <div className="flex flex-wrap gap-1.5">{["all", "store", "experience", "event", "promo", "gallery", "movie", "faq", "subscriber", "message", "settings", "media", "auth"].map((f) => <button key={f} onClick={() => setFilter(f)} className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border", filter === f ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground")}>{f === "all" ? "Todo" : entityLabels[f] || f}</button>)}</div>
         <button onClick={load} className="grid place-items-center h-9 w-9 rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground" aria-label="Recargar"><RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} /></button>
       </div>
       {loading ? <div className="grid place-items-center py-12"><div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div> : items.length === 0 ? <div className="text-center py-12"><History className="mx-auto h-10 w-10 text-muted-foreground/40 mb-2" /><p className="text-sm text-muted-foreground">No hay actividad registrada.</p></div> : (

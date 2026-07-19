@@ -105,16 +105,11 @@
   }
   .animate-kenburns { animation: kenburns 18s ease-out forwards; }
 
-  /* Film grain overlay — animated subtle noise */
+  /* Film grain overlay — STATIC (animated grain caused constant repaints + scroll jank).
+     The SVG noise texture alone gives the cinematic look at zero per-frame cost. */
   .grain-overlay {
-    position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.5; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-    animation: grain-shift 0.6s steps(2) infinite;
-  }
-  @keyframes grain-shift {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-3%, 2%); }
-    100% { transform: translate(2%, -2%); }
+    position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.4; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
   }
 
   /* Edge fade masks for marquees / horizontal rails */

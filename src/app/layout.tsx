@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Ventura Mall" }],
   creator: "Ventura Mall",
   publisher: "Ventura Mall",
-  icons: { icon: "/images/ventura/real/exterior.jpg" },
+  icons: { icon: "/ventura-logo-favicon.png", apple: "/ventura-logo-favicon.png" },
   openGraph: {
     title: "Ventura Mall | El centro comercial más grande de Bolivia",
     description: "110,000 m² de moda, gastronomía, cine IMAX y entretenimiento en Santa Cruz de la Sierra, Bolivia.",

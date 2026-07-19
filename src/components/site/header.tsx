@@ -85,37 +85,19 @@ export function SiteHeader() {
             {/* Logo / wordmark */}
             <Link
               href="#inicio"
-              className="flex items-center gap-3 group"
+              className="flex items-center group"
               aria-label="Ventura Mall — inicio"
             >
-              <span
+              <img
+                src="/ventura-logo.png"
+                alt="Ventura Mall"
                 className={cn(
-                  "relative grid place-items-center h-10 w-10 rounded-xl font-display font-extrabold text-xl shadow-lg transition-all duration-500 group-hover:scale-105",
+                  "h-8 sm:h-9 w-auto transition-all duration-500 group-hover:scale-[1.03]",
                   effectiveScrolled
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-white text-primary"
+                    ? "[filter:none]"
+                    : "brightness-0 invert drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]"
                 )}
-              >
-                V
-              </span>
-              <span className="flex flex-col leading-none">
-                <span
-                  className={cn(
-                    "font-display font-extrabold text-lg sm:text-xl tracking-tight transition-colors duration-500",
-                    effectiveScrolled ? "text-foreground" : "text-white"
-                  )}
-                >
-                  Ventura
-                </span>
-                <span
-                  className={cn(
-                    "text-[0.58rem] sm:text-[0.62rem] font-semibold uppercase tracking-[0.28em] transition-colors duration-500 mt-1",
-                    effectiveScrolled ? "text-primary" : "text-white/85"
-                  )}
-                >
-                  Mall · Santa Cruz
-                </span>
-              </span>
+              />
             </Link>
 
             {/* Desktop inline nav */}
@@ -211,13 +193,8 @@ export function SiteHeader() {
 
               {/* Top bar */}
               <div className="relative z-10 flex items-center justify-between px-5 sm:px-6 h-16 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <span className="grid place-items-center h-9 w-9 rounded-lg bg-primary text-primary-foreground font-display font-extrabold">
-                    V
-                  </span>
-                  <span className="font-display font-extrabold text-lg tracking-tight">
-                    Ventura
-                  </span>
+                <div className="flex items-center">
+                  <img src="/ventura-logo.png" alt="Ventura Mall" className="h-8 w-auto brightness-0 invert" />
                 </div>
                 <button
                   type="button"

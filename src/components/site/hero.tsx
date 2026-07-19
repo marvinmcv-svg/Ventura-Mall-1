@@ -5,11 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, MapPin, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContent } from "@/lib/content-context";
-import {
-  ParallaxImage,
-  GrainOverlay,
-  MagneticButton,
-} from "@/components/site/primitives";
+import { GrainOverlay, MagneticButton } from "@/components/site/primitives";
 import { EASE_OUT_EXPO } from "@/lib/motion";
 
 const SIDE_STATS = [
@@ -78,7 +74,7 @@ export function Hero() {
 
         <div className="relative z-10 mx-auto max-w-7xl w-full px-5 sm:px-6 lg:px-8 pb-14 sm:pb-16 lg:pb-24 pt-28 lg:pt-32">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 text-white mb-6 sm:mb-8">
+            <div className="inline-flex items-center gap-2.5 rounded-full bg-white/15 border border-white/20 px-4 py-2 text-white mb-6 sm:mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
               </span>
@@ -120,7 +116,7 @@ export function Hero() {
                 asChild
                 size="lg"
                 variant="secondary"
-                className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white border border-white/20 shadow-xl text-base h-12 sm:h-14 px-7 sm:px-8"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-xl text-base h-12 sm:h-14 px-7 sm:px-8"
               >
                 <a href="#visita">
                   <MapPin className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -140,31 +136,17 @@ export function Hero() {
       id="inicio"
       className="relative min-h-[100svh] flex items-end overflow-hidden bg-ink"
     >
-      {/* Parallax + ken-burns background */}
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute inset-0 will-change-transform"
-      >
-        <ParallaxImage
+      {/* Parallax + ken-burns background — SINGLE scroll transform (no nested ParallaxImage) for smoothness */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
+        <img
           src={heroImage}
           alt="Ventura Mall en Santa Cruz, Bolivia"
-          kenburns
-          priority
-          className="h-full w-full"
-          imgClassName="h-full w-full object-cover"
+          className="h-full w-full object-cover animate-kenburns"
         />
       </motion.div>
 
       {/* Dark cinematic gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-ink/40" />
-      {/* Subtle warm color wash for depth */}
-      <div
-        className="absolute inset-0 mix-blend-overlay opacity-20 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(135deg, oklch(0.55 0.218 28) 0%, oklch(0.82 0.13 82) 100%)",
-        }}
-      />
       <GrainOverlay />
 
       {/* Side stat trio — entrance slide + scroll fade (xl+) */}
@@ -202,10 +184,9 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
-            className="inline-flex items-center gap-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 text-white mb-6 sm:mb-8"
+            className="inline-flex items-center gap-2.5 rounded-full bg-white/15 border border-white/20 px-4 py-2 text-white mb-6 sm:mb-8"
           >
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
             </span>
             <span className="uppercase tracking-[0.2em] text-[0.65rem] sm:text-[0.7rem] font-semibold">
