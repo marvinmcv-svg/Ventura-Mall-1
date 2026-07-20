@@ -41,7 +41,7 @@ export function SiteHeader() {
   const { open: adminOpen } = useAdmin();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration guard: must set mounted=true only on client to avoid SSR mismatch
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -86,7 +86,7 @@ export function SiteHeader() {
             <Link
               href="#inicio"
               className="flex items-center group"
-              aria-label="Ventura Mall — inicio"
+              aria-label="Ventura Mall — ir al inicio"
             >
               <img
                 src="/ventura-logo.png"

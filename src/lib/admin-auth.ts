@@ -10,9 +10,18 @@ export async function requireAdmin(): Promise<{ ok: true; username: string } | {
   return { ok: true, username: session.username };
 }
 
+// Decoy hash used to equalize timing when the username doesn't exist,
+// preventing username enumeration via response-time differences.
+const DECOY_HASH = "scrypt$100000$0000000000000000000000000000000000000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
 export async function adminLogin(username: string, password: string): Promise<{ ok: boolean; error?: string; token?: string }> {
   const user = await db.adminUser.findUnique({ where: { username } });
-  if (!user) return { ok: false, error: "Usuario o contraseña incorrectos." };
+  if (!user) {
+    // Run a dummy verify against a decoy hash so the non-existent-user path
+    // takes the same time as the wrong-password path.
+    verifyPassword(password, DECOY_HASH);
+    return { ok: false, error: "Usuario o contraseña incorrectos." };
+  }
   const valid = verifyPassword(password, user.password);
   if (!valid) return { ok: false, error: "Usuario o contraseña incorrectos." };
   const token = generateToken();

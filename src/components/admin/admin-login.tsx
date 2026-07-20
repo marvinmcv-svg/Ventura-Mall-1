@@ -55,7 +55,7 @@ export function AdminLogin() {
             <div><label htmlFor="admin-pwd" className="text-xs font-semibold text-foreground mb-1.5 block">Contraseña</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input id="admin-pwd" type={showPwd ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password" className="pl-9 pr-10 h-11" required /><button type="button" onClick={() => setShowPwd((v) => !v)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showPwd ? "Ocultar" : "Mostrar"}>{showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>
             <Button type="submit" disabled={loading} className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">{loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Verificando...</> : <><Lock className="mr-2 h-4 w-4" />Entrar</>}</Button>
           </form>
-          <div className="mt-6 rounded-xl bg-muted/60 border border-border p-3.5 text-xs text-muted-foreground"><span className="font-semibold text-foreground">Credenciales demo:</span> admin / ventura2024</div>
+          <div className="mt-6 rounded-xl bg-muted/60 border border-border p-3.5 text-xs text-muted-foreground">Acceso restringido al personal autorizado. Si olvidaste tus credenciales, contacta al administrador del sistema.</div>
         </motion.div>
       </div>
     </div>

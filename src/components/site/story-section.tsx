@@ -24,7 +24,7 @@ export function StorySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration guard: must set mounted=true only on client to avoid SSR mismatch
     setMounted(true);
   }, []);
 

@@ -50,10 +50,44 @@ export const viewport: Viewport = {
   ],
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ShoppingCenter",
+  name: "Ventura Mall",
+  description:
+    "El centro comercial más grande de Bolivia. 110,000 m² de moda, gastronomía, cine IMAX y entretenimiento en Santa Cruz de la Sierra.",
+  image: "https://venturamall.bo/images/ventura/real/exterior.jpg",
+  url: "https://venturamall.bo",
+  telephone: "+591 3 3432121",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Av. San Martín esq. 4to Anillo, Equipetrol Norte",
+    addressLocality: "Santa Cruz de la Sierra",
+    addressRegion: "Santa Cruz",
+    addressCountry: "BO",
+  },
+  geo: { "@type": "GeoCoordinates", latitude: -17.75465396550155, longitude: -63.19979667663574 },
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "10:00",
+      closes: "22:00",
+    },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday", opens: "11:00", closes: "22:00" },
+  ],
+  sameAs: [
+    "https://www.instagram.com/venturamalloficial/",
+    "https://www.facebook.com/VenturaMallBolivia",
+    "https://twitter.com/Venturamallbo",
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} antialiased bg-background text-foreground`}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         {children}
         <Toaster />
       </body>

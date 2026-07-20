@@ -10,7 +10,11 @@ export async function POST(req: NextRequest) {
     const password = typeof body?.password === "string" ? body.password : "";
     if (!username || !password) return NextResponse.json({ ok: false, error: "Usuario y contraseña son requeridos." }, { status: 400 });
     const result = await adminLogin(username, password);
-    if (!result.ok || !result.token) return NextResponse.json({ ok: false, error: result.error }, { status: 401 });
+    if (!result.ok || !result.token) {
+      // Log failed attempts (without the password) for incident response visibility.
+      await logActivity({ action: "login_failed", entity: "auth", entityName: username.slice(0, 60), username: "anonymous" }).catch(() => {});
+      return NextResponse.json({ ok: false, error: result.error }, { status: 401 });
+    }
     const res = NextResponse.json({ ok: true, username });
     await logActivity({ action: "login", entity: "auth", username });
     res.cookies.set(SESSION_COOKIE, result.token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: Math.floor(SESSION_TTL_MS / 1000) });

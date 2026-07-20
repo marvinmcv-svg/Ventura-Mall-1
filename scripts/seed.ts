@@ -1,15 +1,23 @@
 import { db } from "../src/lib/db";
-import { hashPassword } from "../src/lib/auth";
+import { hashPassword, verifyPassword } from "../src/lib/auth";
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "ventura2024";
+const ADMIN_USERNAME = "Marvin";
+const ADMIN_PASSWORD = "Ventura123!";
 
 async function main() {
   console.log("🌱 Seeding Ventura Mall database...");
+  // Upsert admin: create if missing, or update password if the existing admin is the old default or has changed.
   const existingAdmin = await db.adminUser.findUnique({ where: { username: ADMIN_USERNAME } });
   if (!existingAdmin) {
+    // Remove any stale default admin so the new canonical one is the only one.
+    await db.adminUser.deleteMany({ where: { username: "admin" } }).catch(() => {});
     await db.adminUser.create({ data: { username: ADMIN_USERNAME, password: await hashPassword(ADMIN_PASSWORD), role: "admin" } });
-    console.log(`  ✓ Admin: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
+    console.log(`  ✓ Admin created: ${ADMIN_USERNAME}`);
+  } else if (!verifyPassword(ADMIN_PASSWORD, existingAdmin.password)) {
+    await db.adminUser.update({ where: { username: ADMIN_USERNAME }, data: { password: await hashPassword(ADMIN_PASSWORD) } });
+    console.log(`  ✓ Admin password synced: ${ADMIN_USERNAME}`);
+  } else {
+    console.log(`  ✓ Admin up to date: ${ADMIN_USERNAME}`);
   }
 
   const settings: Record<string, string> = {

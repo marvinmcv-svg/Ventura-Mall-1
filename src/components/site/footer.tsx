@@ -64,7 +64,7 @@ export function SiteFooter() {
         >
           {/* Col 1: Brand */}
           <StaggerItem variant={fadeUpSm} className="sm:col-span-2 lg:col-span-1">
-            <Link href="#inicio" className="flex items-center gap-3">
+            <Link href="#inicio" className="flex items-center gap-3" aria-label="Ventura Mall — ir al inicio">
               <img src="/ventura-logo.png" alt="Ventura Mall" className="h-10 w-auto brightness-0 invert" />
             </Link>
             <span className="mt-2 text-[0.65rem] font-semibold uppercase tracking-editorial text-gold">
