@@ -61,6 +61,7 @@ export function Promos() {
 
   const [featured, ...rest] = promos;
   const featuredAccent = getAccent(featured.accent);
+  const featuredMedia = featured.media || [];
 
   return (
     <section
@@ -97,20 +98,36 @@ export function Promos() {
                 )}
               />
 
-              {/* Image side */}
-              {featured.image && (
+              {/* Media side (image or video) */}
+              {featuredMedia.length > 0 && (
                 <div className="relative aspect-[16/10] overflow-hidden md:aspect-auto md:min-h-[320px]">
-                  <ParallaxImage
-                    src={featured.image}
-                    alt={featured.title}
-                    className="h-full w-full"
-                    imgClassName="h-full w-full object-cover transition-transform duration-[1.1s] ease-out group-hover:scale-[1.05]"
-                    range={40}
-                  />
+                  {featuredMedia[0].type === "video" ? (
+                    <video
+                      src={featuredMedia[0].url}
+                      className="h-full w-full object-cover transition-transform duration-[1.1s] ease-out group-hover:scale-[1.05]"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <ParallaxImage
+                      src={featuredMedia[0].url}
+                      alt={featured.title}
+                      className="h-full w-full"
+                      imgClassName="h-full w-full object-cover transition-transform duration-[1.1s] ease-out group-hover:scale-[1.05]"
+                      range={40}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-ink/10" />
                   <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1.5 text-[0.6rem] font-bold uppercase tracking-editorial text-ink shadow-lg">
                     <Sparkles className="h-3 w-3 fill-current" /> Oferta destacada
                   </div>
+                  {featuredMedia.length > 1 && (
+                    <div className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-ink/70 backdrop-blur-sm px-2.5 py-1 text-[0.65rem] font-semibold text-white">
+                      {featuredMedia.length} archivos
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -118,11 +135,11 @@ export function Promos() {
               <div
                 className={cn(
                   "relative flex flex-col justify-center p-7 sm:p-9 lg:p-11",
-                  !featured.image && "md:col-span-2"
+                  !featuredMedia.length && "md:col-span-2"
                 )}
               >
                 {/* Decorative giant emoji watermark when no image */}
-                {!featured.image && (
+                {!featuredMedia.length && (
                   <span
                     aria-hidden
                     className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 select-none text-[12rem] leading-none opacity-[0.06] transition-transform duration-700 group-hover:scale-110 sm:text-[16rem] lg:text-[20rem]"
@@ -178,6 +195,7 @@ export function Promos() {
           {/* Other promos — tall cards with accent left border */}
           {rest.map((p) => {
             const accent = getAccent(p.accent);
+            const pMedia = p.media || [];
             return (
               <StaggerItem key={p.id} variant={fadeUpSm} className="h-full">
                 <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-ink/8 sm:p-8">
@@ -195,6 +213,35 @@ export function Promos() {
                       accentTint[accent]
                     )}
                   />
+
+                  {/* Media preview (if any) */}
+                  {pMedia.length > 0 && (
+                    <div className="relative -mx-7 -mt-7 mb-5 sm:-mx-8 sm:-mt-8 overflow-hidden">
+                      <div className="aspect-[16/9] overflow-hidden">
+                        {pMedia[0].type === "video" ? (
+                          <video
+                            src={pMedia[0].url}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <img
+                            src={pMedia[0].url}
+                            alt={p.title}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                        )}
+                      </div>
+                      {pMedia.length > 1 && (
+                        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-ink/70 backdrop-blur-sm px-2 py-0.5 text-[0.6rem] font-semibold text-white">
+                          +{pMedia.length - 1} más
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <div className="relative flex items-start justify-between">
                     <div

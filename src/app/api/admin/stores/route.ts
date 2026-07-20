@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const FIELDS = ["name","category","level","description","color","textOn","featured","logoUrl","phone","website","order","active"] as const;
+const FIELDS = ["name","category","level","description","color","textOn","featured","logoUrl","phone","website","images","order","active"] as const;
 function pick(body: any) {
   const out: any = {};
   for (const f of FIELDS) {

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Save, Loader2, Store as StoreIcon, Sparkles, Tag, CalendarDays, Image as ImageIcon, Film, HelpCircle, Star, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, Loader2, Store as StoreIcon, Sparkles, Tag, CalendarDays, Image as ImageIcon, Film, HelpCircle, Star, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +37,103 @@ function FormShell({ title, onClose, children, onSave, saving }: { title: string
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div><Label className="text-xs font-semibold text-foreground mb-1.5 block">{label}</Label>{children}</div>; }
 function EmptyState({ icon: Icon, label }: { icon: any; label: string }) { return <div className="text-center py-12"><div className="mx-auto mb-3 grid place-items-center h-14 w-14 rounded-full bg-muted"><Icon className="h-6 w-6 text-muted-foreground" /></div><p className="text-sm text-muted-foreground">{label}</p></div>; }
 
+/** Parse a JSON string array safely. Returns [] on failure. */
+function parseJsonArray(s: string | null | undefined): any[] {
+  if (!s) return [];
+  try { const v = JSON.parse(s); return Array.isArray(v) ? v : []; } catch { return []; }
+}
+
+/** Detect video URLs by extension. */
+function isVideo(url: string): boolean {
+  return /\.(mp4|webm|mov|avi|mkv|ogg|3gp)(\?|$)/i.test(url);
+}
+
+/**
+ * ImageGalleryEditor — manage a list of image URLs (stored as a JSON string).
+ * Used for store image galleries. Add via MediaPicker, remove via trash button,
+ * reorder via drag (left/right arrows for simplicity).
+ */
+function ImageGalleryEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const images = parseJsonArray(value).map(String).filter(Boolean);
+  const add = (url: string) => { if (!url) return; onChange(JSON.stringify([...images, url])); };
+  const remove = (idx: number) => { onChange(JSON.stringify(images.filter((_, i) => i !== idx))); };
+  const move = (idx: number, dir: -1 | 1) => {
+    const next = [...images];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    onChange(JSON.stringify(next));
+  };
+  return (
+    <div className="space-y-3">
+      {images.length > 0 && (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {images.map((url, i) => (
+            <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-border bg-muted">
+              <img src={url} alt={`Imagen ${i + 1}`} className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="grid place-items-center h-7 w-7 rounded-md bg-white/90 text-ink hover:bg-white disabled:opacity-30" aria-label="Mover izquierda"><ChevronLeft className="h-4 w-4" /></button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === images.length - 1} className="grid place-items-center h-7 w-7 rounded-md bg-white/90 text-ink hover:bg-white disabled:opacity-30" aria-label="Mover derecha"><ChevronRight className="h-4 w-4" /></button>
+                <button type="button" onClick={() => remove(i)} className="grid place-items-center h-7 w-7 rounded-md bg-red-600 text-white hover:bg-red-700" aria-label="Eliminar"><Trash2 className="h-3.5 w-3.5" /></button>
+              </div>
+              <span className="absolute top-1 left-1 text-[0.6rem] font-bold bg-ink/70 text-white rounded px-1.5 py-0.5">{i + 1}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <MediaPicker label="" value="" onChange={add} accept="image/*" />
+      {images.length === 0 && <p className="text-xs text-muted-foreground">Subí imágenes para mostrar una galería de la tienda en la página principal.</p>}
+    </div>
+  );
+}
+
+/**
+ * MediaGalleryEditor — manage a list of media items (image or video).
+ * Stored as a JSON string of {url, type} objects. Used for promo media.
+ */
+function MediaGalleryEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const items = parseJsonArray(value).map((m: any) =>
+    typeof m === "string" ? { url: m, type: isVideo(m) ? "video" : "image" } : { url: String(m.url || ""), type: m.type === "video" ? "video" : "image" }
+  ).filter((m: any) => m.url);
+  const add = (url: string) => { if (!url) return; onChange(JSON.stringify([...items, { url, type: isVideo(url) ? "video" : "image" }])); };
+  const remove = (idx: number) => { onChange(JSON.stringify(items.filter((_: any, i: number) => i !== idx))); };
+  const move = (idx: number, dir: -1 | 1) => {
+    const next = [...items];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    onChange(JSON.stringify(next));
+  };
+  return (
+    <div className="space-y-3">
+      {items.length > 0 && (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {items.map((item: any, i: number) => (
+            <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-border bg-muted">
+              {item.type === "video" ? (
+                <video src={item.url} className="h-full w-full object-cover" muted loop />
+              ) : (
+                <img src={item.url} alt={`Media ${i + 1}`} className="h-full w-full object-cover" />
+              )}
+              <span className="absolute top-1 left-1 text-[0.6rem] font-bold bg-ink/70 text-white rounded px-1.5 py-0.5 flex items-center gap-1">
+                {item.type === "video" ? <Film className="h-2.5 w-2.5" /> : <ImageIcon className="h-2.5 w-2.5" />}
+                {i + 1}
+              </span>
+              <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="grid place-items-center h-7 w-7 rounded-md bg-white/90 text-ink hover:bg-white disabled:opacity-30" aria-label="Mover izquierda"><ChevronLeft className="h-4 w-4" /></button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1} className="grid place-items-center h-7 w-7 rounded-md bg-white/90 text-ink hover:bg-white disabled:opacity-30" aria-label="Mover derecha"><ChevronRight className="h-4 w-4" /></button>
+                <button type="button" onClick={() => remove(i)} className="grid place-items-center h-7 w-7 rounded-md bg-red-600 text-white hover:bg-red-700" aria-label="Eliminar"><Trash2 className="h-3.5 w-3.5" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <MediaPicker label="" value="" onChange={add} accept="image/*,video/*" />
+      {items.length === 0 && <p className="text-xs text-muted-foreground">Subí imágenes o videos para mostrar en la tarjeta de promoción en la página principal.</p>}
+    </div>
+  );
+}
+
 const STORE_CATEGORIES = ["Moda", "Gastronomía", "Entretenimiento", "Hogar", "Servicios", "Tecnología"];
 const STORE_COLORS = ["bg-ink","bg-zinc-800","bg-slate-900","bg-red-700","bg-red-600","bg-rose-500","bg-pink-600","bg-fuchsia-500","bg-purple-600","bg-amber-700","bg-orange-600","bg-orange-500","bg-yellow-500","bg-lime-600","bg-green-700","bg-emerald-800","bg-teal-600","bg-blue-900","bg-gold"];
 
@@ -52,7 +149,7 @@ export function StoresEditor() {
     <div>
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="relative flex-1 max-w-xs"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar..." className="pl-9 h-9" /></div>
-        <Button onClick={() => setEditing({ name: "", category: "Moda", level: "Nivel 1", description: "", color: "bg-ink", textOn: "light", featured: false, order: 0, active: true })} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><Plus className="h-4 w-4 mr-1" />Nueva tienda</Button>
+        <Button onClick={() => setEditing({ name: "", category: "Moda", level: "Nivel 1", description: "", color: "bg-ink", textOn: "light", featured: false, images: "[]", order: 0, active: true })} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><Plus className="h-4 w-4 mr-1" />Nueva tienda</Button>
       </div>
       {loading ? <EmptyState icon={Loader2} label="Cargando..." /> : filtered.length === 0 ? <EmptyState icon={StoreIcon} label="No hay tiendas." /> : (
         <div className="grid sm:grid-cols-2 gap-3">
@@ -73,6 +170,7 @@ export function StoresEditor() {
             <div className="grid sm:grid-cols-2 gap-4"><Field label="Color del tile"><div className="flex flex-wrap gap-1.5">{STORE_COLORS.map((c) => <button key={c} type="button" onClick={() => setEditing({ ...editing, color: c })} className={cn("h-7 w-7 rounded-md border-2", c, editing.color === c ? "border-primary ring-2 ring-primary/30" : "border-border")} />)}</div></Field><Field label="Color de texto"><div className="flex gap-2">{(["light", "dark"] as const).map((t) => <button key={t} type="button" onClick={() => setEditing({ ...editing, textOn: t })} className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold border", editing.textOn === t ? "bg-primary text-primary-foreground border-primary" : "border-border")}>{t === "light" ? "Claro" : "Oscuro"}</button>)}</div></Field></div>
             <div className="grid sm:grid-cols-2 gap-4"><Field label="Teléfono (opcional)"><Input value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} /></Field><Field label="Sitio web (opcional)"><Input value={editing.website || ""} onChange={(e) => setEditing({ ...editing, website: e.target.value })} /></Field></div>
             <MediaPicker label="Logo (opcional)" value={editing.logoUrl || ""} onChange={(v) => setEditing({ ...editing, logoUrl: v })} />
+            <Field label="Galería de imágenes (se muestran en la página principal)"><ImageGalleryEditor value={editing.images || "[]"} onChange={(v) => setEditing({ ...editing, images: v })} /></Field>
             <div className="flex items-center gap-6"><label className="flex items-center gap-2 text-sm"><Switch checked={!!editing.featured} onCheckedChange={(v) => setEditing({ ...editing, featured: v })} />Destacada</label><label className="flex items-center gap-2 text-sm"><Switch checked={!!editing.active} onCheckedChange={(v) => setEditing({ ...editing, active: v })} />Activa</label></div>
           </div>
         </FormShell>
@@ -103,11 +201,11 @@ export function PromosEditor() {
   const onSave = async () => { if (!editing) return; setSaving(true); try { if (editing.id) await update(editing.id, editing); else await create(editing); toast({ title: "Guardado" }); setEditing(null); } catch (e: any) { toast({ variant: "destructive", title: "Error", description: e.message }); } finally { setSaving(false); } };
   return (
     <div>
-      <div className="flex justify-end mb-4"><Button onClick={() => setEditing({ title: "", description: "", category: "Moda", date: "", accent: "coral", emoji: "✨", image: "", order: 0, active: true })} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><Plus className="h-4 w-4 mr-1" />Nueva promoción</Button></div>
+      <div className="flex justify-end mb-4"><Button onClick={() => setEditing({ title: "", description: "", category: "Moda", date: "", accent: "coral", emoji: "✨", image: "", media: "[]", order: 0, active: true })} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><Plus className="h-4 w-4 mr-1" />Nueva promoción</Button></div>
       {loading ? <EmptyState icon={Loader2} label="Cargando..." /> : items.length === 0 ? <EmptyState icon={Tag} label="Sin promociones." /> : (
         <div className="grid sm:grid-cols-2 gap-3">{items.map((p) => (<div key={p.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3"><div className="text-2xl">{p.emoji}</div><div className="flex-1 min-w-0"><div className="font-semibold text-sm text-ink">{p.title}</div><div className="text-xs text-muted-foreground line-clamp-2">{p.description}</div><div className="text-[0.7rem] text-muted-foreground mt-1">{p.category} · {p.date}</div></div><div className="flex gap-1"><Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditing(p)}><Pencil className="h-3.5 w-3.5" /></Button><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { if (confirm("¿Eliminar?")) remove(p.id).then(() => toast({ title: "Eliminada" })); }}><Trash2 className="h-3.5 w-3.5" /></Button></div></div>))}</div>
       )}
-      <AnimatePresence>{editing && (<FormShell title={editing.id ? "Editar promoción" : "Nueva promoción"} onClose={() => setEditing(null)} onSave={onSave} saving={saving}><div className="space-y-4"><div className="grid sm:grid-cols-[80px_1fr] gap-4"><Field label="Emoji"><Input value={editing.emoji} onChange={(e) => setEditing({ ...editing, emoji: e.target.value })} className="text-center text-xl" /></Field><Field label="Título"><Input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} /></Field></div><Field label="Descripción"><Textarea value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} rows={3} /></Field><MediaPicker label="Imagen (opcional)" value={editing.image || ""} onChange={(v) => setEditing({ ...editing, image: v })} /><div className="grid sm:grid-cols-3 gap-4"><Field label="Categoría"><Input value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })} /></Field><Field label="Fecha / vigencia"><Input value={editing.date} onChange={(e) => setEditing({ ...editing, date: e.target.value })} /></Field><Field label="Acento"><select value={editing.accent} onChange={(e) => setEditing({ ...editing, accent: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm">{["coral", "gold", "emerald", "ink"].map((c) => <option key={c} value={c}>{c}</option>)}</select></Field></div><Field label="Orden"><Input type="number" value={editing.order} onChange={(e) => setEditing({ ...editing, order: Number(e.target.value) })} /></Field><label className="flex items-center gap-2 text-sm"><Switch checked={!!editing.active} onCheckedChange={(v) => setEditing({ ...editing, active: v })} />Activa</label></div></FormShell>)}</AnimatePresence>
+      <AnimatePresence>{editing && (<FormShell title={editing.id ? "Editar promoción" : "Nueva promoción"} onClose={() => setEditing(null)} onSave={onSave} saving={saving}><div className="space-y-4"><div className="grid sm:grid-cols-[80px_1fr] gap-4"><Field label="Emoji"><Input value={editing.emoji} onChange={(e) => setEditing({ ...editing, emoji: e.target.value })} className="text-center text-xl" /></Field><Field label="Título"><Input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} /></Field></div><Field label="Descripción"><Textarea value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} rows={3} /></Field><Field label="Media (imágenes y/o videos — se muestran en la página principal)"><MediaGalleryEditor value={editing.media || "[]"} onChange={(v) => setEditing({ ...editing, media: v })} /></Field><div className="grid sm:grid-cols-3 gap-4"><Field label="Categoría"><Input value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })} /></Field><Field label="Fecha / vigencia"><Input value={editing.date} onChange={(e) => setEditing({ ...editing, date: e.target.value })} /></Field><Field label="Acento"><select value={editing.accent} onChange={(e) => setEditing({ ...editing, accent: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm">{["coral", "gold", "emerald", "ink"].map((c) => <option key={c} value={c}>{c}</option>)}</select></Field></div><Field label="Orden"><Input type="number" value={editing.order} onChange={(e) => setEditing({ ...editing, order: Number(e.target.value) })} /></Field><label className="flex items-center gap-2 text-sm"><Switch checked={!!editing.active} onCheckedChange={(v) => setEditing({ ...editing, active: v })} />Activa</label></div></FormShell>)}</AnimatePresence>
     </div>
   );
 }

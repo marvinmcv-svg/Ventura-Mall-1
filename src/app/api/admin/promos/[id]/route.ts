@@ -5,7 +5,7 @@ import { prismaErrorResponse } from "@/lib/prisma-errors";
 import { logActivity } from "@/lib/activity";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const FIELDS = ["title","description","category","date","accent","emoji","image","order","active"] as const;
+const FIELDS = ["title","description","category","date","accent","emoji","image","media","order","active"] as const;
 function pick(body: any) {
   const out: any = {};
   for (const f of FIELDS) {

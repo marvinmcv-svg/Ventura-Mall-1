@@ -46,6 +46,7 @@ model Store {
   logoUrl     String?
   phone       String?
   website     String?
+  images      String?
   order       Int      @default(0)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -78,6 +79,7 @@ model Promo {
   accent      String   @default("coral")
   emoji       String   @default("✨")
   image       String?
+  media       String?
   order       Int      @default(0)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())

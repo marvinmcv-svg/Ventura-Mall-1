@@ -17,7 +17,10 @@ export function Visit() {
   const lat = settings.lat || "-17.75465396550155";
   const lng = settings.lng || "-63.19979667663574";
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-  const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+  // Use the place-name query for a richer marker + info card in the embed.
+  const placeQuery = encodeURIComponent("Ventura Mall, Santa Cruz de la Sierra, Bolivia");
+  const embedUrl = `https://maps.google.com/maps?q=${placeQuery}&z=15&output=embed`;
+  const fullMapsUrl = `https://www.google.com/maps/search/?api=1&query=${placeQuery}`;
 
   const infoCards = [
     {
@@ -107,6 +110,15 @@ export function Visit() {
                     <div className="text-white/55 text-xs mt-0.5">{settings.city}</div>
                   </div>
                 </div>
+                <a
+                  href={fullMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 w-full rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-2 transition-colors"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  Abrir en Google Maps
+                </a>
               </div>
             </div>
           </Reveal>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowUpRight, MapPin, Search } from "lucide-react";
+import { useMemo, useState, useCallback } from "react";
+import { ArrowUpRight, MapPin, Search, X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,24 +24,94 @@ function StoreInitials({ name }: { name: string }) {
   return <>{initials || "V"}</>;
 }
 
-function StoreCard({ store }: { store: StoreItem }) {
+/** Lightbox gallery for a store's images. */
+function StoreLightbox({
+  store,
+  index,
+  onClose,
+  onPrev,
+  onNext,
+}: {
+  store: StoreItem;
+  index: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const images = store.images;
+  const current = images[index];
+  if (!current) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[80] bg-ink/95 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Galería de ${store.name}`}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 grid place-items-center h-11 w-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        aria-label="Cerrar galería"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={(e) => { e.stopPropagation(); onPrev(); }}
+            className="absolute left-2 sm:left-4 grid place-items-center h-11 w-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            aria-label="Imagen anterior"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onNext(); }}
+            className="absolute right-2 sm:right-4 grid place-items-center h-11 w-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            aria-label="Imagen siguiente"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </>
+      )}
+      <div className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+        <img
+          src={current}
+          alt={`${store.name} — imagen ${index + 1} de ${images.length}`}
+          className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl"
+        />
+        <div className="mt-4 text-center text-white/80">
+          <div className="font-display font-bold text-lg">{store.name}</div>
+          <div className="text-xs text-white/50 mt-1">
+            {index + 1} / {images.length}
+            {store.level && <span className="ml-2">· {store.level}</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StoreCard({ store, onOpenGallery }: { store: StoreItem; onOpenGallery: (store: StoreItem) => void }) {
   const textCol = store.textOn === "light" ? "text-white" : "text-ink";
   const isFeatured = store.featured;
+  const hasImages = store.images.length > 0;
+  const heroImage = hasImages ? store.images[0] : store.logoUrl;
 
   const visual = (
     <div
       className={cn(
         "relative overflow-hidden grid place-items-center",
         isFeatured ? "h-32 sm:h-auto sm:w-2/5 shrink-0" : "h-20",
-        store.color,
-        textCol
+        !heroImage && store.color,
+        !heroImage && textCol
       )}
     >
-      {store.logoUrl ? (
+      {heroImage ? (
         <img
-          src={store.logoUrl}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          src={heroImage}
+          alt={store.name}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       ) : (
         <span
@@ -51,6 +121,12 @@ function StoreCard({ store }: { store: StoreItem }) {
           )}
         >
           <StoreInitials name={store.name} />
+        </span>
+      )}
+      {hasImages && (
+        <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-ink/70 backdrop-blur-sm px-2.5 py-1 text-[0.65rem] font-semibold text-white">
+          <Images className="h-3 w-3" />
+          {store.images.length}
         </span>
       )}
       <div
@@ -91,15 +167,57 @@ function StoreCard({ store }: { store: StoreItem }) {
           <MapPin className="h-3.5 w-3.5 text-primary" />
           {store.level}
         </span>
-        {store.website && (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-all group-hover:gap-1.5">
-            Visitar
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {hasImages && (
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-all group-hover:gap-1.5">
+              Ver galería
+              <Images className="h-3.5 w-3.5" />
+            </span>
+          )}
+          {store.website && (
+            <a
+              href={store.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-foreground/70 hover:text-primary transition-colors"
+              aria-label={`Visitar sitio web de ${store.name}`}
+            >
+              Web
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
+
+  // If the store has images, the whole card is a button that opens the lightbox.
+  // If no images but has a website, the whole card links to the website (original behavior).
+  if (hasImages) {
+    return (
+      <button
+        type="button"
+        onClick={() => onOpenGallery(store)}
+        className="group block text-left w-full h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        aria-label={`Ver galería de imágenes de ${store.name}`}
+      >
+        <article className="relative h-full overflow-hidden rounded-2xl border border-border/70 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5 hover:border-border">
+          {isFeatured ? (
+            <div className="flex flex-col sm:flex-row h-full">
+              {visual}
+              {body}
+            </div>
+          ) : (
+            <div className="flex flex-col h-full">
+              {visual}
+              {body}
+            </div>
+          )}
+        </article>
+      </button>
+    );
+  }
 
   const article = (
     <article className="group relative h-full overflow-hidden rounded-2xl border border-border/70 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5 hover:border-border">
@@ -138,6 +256,8 @@ export function Stores() {
   const stores = content.stores;
   const [active, setActive] = useState<string>("Todas");
   const [query, setQuery] = useState("");
+  const [galleryStore, setGalleryStore] = useState<StoreItem | null>(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const categories = useMemo(() => {
     const present = Array.from(new Set(stores.map((s) => s.category)));
@@ -157,13 +277,25 @@ export function Stores() {
     });
   }, [stores, active, query]);
 
+  const openGallery = useCallback((store: StoreItem) => {
+    setGalleryStore(store);
+    setGalleryIndex(0);
+  }, []);
+  const closeGallery = useCallback(() => setGalleryStore(null), []);
+  const prevImage = useCallback(() => {
+    setGalleryIndex((i) => (galleryStore ? (i - 1 + galleryStore.images.length) % galleryStore.images.length : 0));
+  }, [galleryStore]);
+  const nextImage = useCallback(() => {
+    setGalleryIndex((i) => (galleryStore ? (i + 1) % galleryStore.images.length : 0));
+  }, [galleryStore]);
+
   return (
     <section id="tiendas" className="py-20 sm:py-28 scroll-mt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Directorio de tiendas"
           title="Tus marcas favoritas, todas en un solo lugar"
-          description="Más de 150 marcas de moda, gastronomía, entretenimiento y tecnología. Filtra por categoría y empieza a recorrer."
+          description="Más de 150 marcas de moda, gastronomía, entretenimiento y tecnología. Filtra por categoría y empezá a recorrer."
           accent="red"
         />
 
@@ -227,12 +359,22 @@ export function Stores() {
                 variant={fadeUp}
                 className={cn("h-full", store.featured && "sm:col-span-2")}
               >
-                <StoreCard store={store} />
+                <StoreCard store={store} onOpenGallery={openGallery} />
               </StaggerItem>
             ))}
           </StaggerGroup>
         )}
       </div>
+
+      {galleryStore && (
+        <StoreLightbox
+          store={galleryStore}
+          index={galleryIndex}
+          onClose={closeGallery}
+          onPrev={prevImage}
+          onNext={nextImage}
+        />
+      )}
     </section>
   );
 }
