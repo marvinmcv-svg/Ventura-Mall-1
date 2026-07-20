@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-function isValidEmail(email: string): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+// RFC 5321 caps an email at 254 chars. The local-part at 64 and domain at 253 are also RFC limits.
+const MAX_EMAIL_LEN = 254;
+// Strict email regex: rejects angle brackets, quotes, and other shell/HTML metacharacters
+// that have no place in a real address. Allows the standard printable ASCII email charset.
+function isValidEmail(email: string): boolean {
+  if (email.length > MAX_EMAIL_LEN) return false;
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/.test(email);
+}
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
-    const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+    const email = typeof body?.email === "string" ? body.email.trim().toLowerCase().slice(0, MAX_EMAIL_LEN) : "";
     const name = typeof body?.name === "string" ? body.name.trim().slice(0, 120) : null;
     if (!email || !isValidEmail(email)) return NextResponse.json({ ok: false, error: "Por favor ingresa un correo electrónico válido." }, { status: 400 });
     const existing = await db.subscriber.findUnique({ where: { email } });

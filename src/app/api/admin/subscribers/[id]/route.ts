@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { prismaErrorResponse } from "@/lib/prisma-errors";
 import { logActivity } from "@/lib/activity";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const item = await db.subscriber.update({ where: { id }, data });
     await logActivity({ action: "update", entity: "subscriber", entityId: id, entityName: item.email, username: auth.username });
     return NextResponse.json({ ok: true, item });
-  } catch (error) { console.error("[subscribers PUT]", error); return NextResponse.json({ ok: false, error: "Error" }, { status: 500 }); }
+  } catch (error) { console.error("[subscribers PUT]", error); const pr = prismaErrorResponse(error); if (pr) return pr; return NextResponse.json({ ok: false, error: "Error" }, { status: 500 }); }
 }
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin();
@@ -27,5 +28,5 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await db.subscriber.delete({ where: { id } });
     if (sub) await logActivity({ action: "delete", entity: "subscriber", entityId: id, entityName: sub.email, username: auth.username });
     return NextResponse.json({ ok: true });
-  } catch (error) { console.error("[subscribers DELETE]", error); return NextResponse.json({ ok: false, error: "Error" }, { status: 500 }); }
+  } catch (error) { console.error("[subscribers DELETE]", error); const pr = prismaErrorResponse(error); if (pr) return pr; return NextResponse.json({ ok: false, error: "Error" }, { status: 500 }); }
 }
