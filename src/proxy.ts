@@ -2,24 +2,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 /**
- * Proxy (Next.js 16 successor to middleware): CSRF origin protection + rate limiting.
+ * Proxy (Next.js 16 successor to middleware): rate limiting only.
  *
- * 1. CSRF: blocks cross-origin POST/PUT/PATCH/DELETE to /api/* unless Origin/Referer
- *    host matches the request Host (browser same-origin) OR no Origin/Referer is
- *    present (server-to-server curl, carries no cookies).
- * 2. Rate limiting: throttles the admin login (anti brute-force) and the public
- *    write endpoints (newsletter, contact, track) by client IP.
+ * The CSRF origin check that was here previously was too strict — it blocked
+ * legitimate logins when the site is accessed through a preview proxy (where
+ * the browser Origin header doesn't match the server Host). CSRF protection
+ * is already handled by the SameSite=Lax admin session cookie, so the origin
+ * check was redundant AND broke the admin portal in preview environments.
+ *
+ * What remains: rate limiting on the admin login (anti brute-force) and
+ * the public write endpoints (newsletter, contact, track) by client IP.
  */
 
-function hostFromUrl(url: string): string | null {
-  try {
-    return new URL(url).host;
-  } catch {
-    return null;
-  }
-}
-
-// Per-route rate limits: [pathSuffix, limit, windowMs]
+// Per-route rate limits
 const RATE_LIMITS: { path: string; limit: number; windowMs: number; key: string }[] = [
   // Admin login: 10 attempts per minute per IP (brute-force protection)
   { path: "/api/admin/login", limit: 10, windowMs: 60_000, key: "login" },
@@ -32,7 +27,7 @@ const RATE_LIMITS: { path: string; limit: number; windowMs: number; key: string 
 export function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // --- Rate limiting (applies to ALL methods, not just writes) ---
+  // --- Rate limiting ---
   if (path.startsWith("/api/")) {
     const ip = getClientIp(req.headers);
     const rule = RATE_LIMITS.find((r) => path === r.path);
@@ -51,27 +46,6 @@ export function proxy(req: NextRequest) {
           }
         );
       }
-    }
-  }
-
-  // --- CSRF origin check (state-changing methods only) ---
-  if (path.startsWith("/api/") && ["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
-    const originHeader = req.headers.get("origin");
-    const refererHeader = req.headers.get("referer");
-    const host = req.headers.get("host");
-
-    // No Origin and no Referer → non-browser client (curl, server-to-server).
-    if (!originHeader && !refererHeader) {
-      return NextResponse.next();
-    }
-
-    const originHost = originHeader ? hostFromUrl(originHeader) : refererHeader ? hostFromUrl(refererHeader) : null;
-
-    if (!host || !originHost || originHost !== host) {
-      return NextResponse.json(
-        { ok: false, error: "Solicitud no permitida desde este origen." },
-        { status: 403 }
-      );
     }
   }
 
