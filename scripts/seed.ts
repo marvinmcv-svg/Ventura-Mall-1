@@ -1,8 +1,8 @@
 import { db } from "../src/lib/db";
 import { hashPassword, verifyPassword } from "../src/lib/auth";
 
-const ADMIN_USERNAME = "Marvin";
-const ADMIN_PASSWORD = "Ventura123!";
+const ADMIN_USERNAME = "MarvinC";
+const ADMIN_PASSWORD = "VenturaMall123!";
 
 async function main() {
   console.log("🌱 Seeding Ventura Mall database...");
