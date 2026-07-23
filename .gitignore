@@ -69,3 +69,8 @@ Thumbs.db
 
 # Zscripts runtime
 /.zscripts/
+
+# Tool artifacts
+/tool-results/
+/upload/
+/download/
