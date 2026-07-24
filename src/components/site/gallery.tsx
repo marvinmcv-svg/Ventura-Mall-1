@@ -54,6 +54,7 @@ function TileMedia({ src, alt }: { src: string; alt: string }) {
 
 export function Gallery() {
   const { content } = useContent();
+  const { settings } = content;
   const items = content.gallery;
   const [active, setActive] = useState<number | null>(null);
 
@@ -79,9 +80,9 @@ export function Gallery() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="GALERÍA"
-          title="Un vistazo a la experiencia Ventura"
-          description="Luces del boulevard, reflejos en el mármol, texturas del diseño. Cada rincón de Ventura fue pensado para sentirse como una película."
+          eyebrow={settings.galleryEyebrow || "GALERÍA"}
+          title={settings.galleryTitle || "Un vistazo a la experiencia Ventura"}
+          description={settings.galleryDescription || "Luces del boulevard, reflejos en el mármol, texturas del diseño. Cada rincón de Ventura fue pensado para sentirse como una película."}
           dark
           className="mb-12 sm:mb-16"
         />

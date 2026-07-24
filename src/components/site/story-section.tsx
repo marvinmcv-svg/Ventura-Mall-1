@@ -7,16 +7,14 @@ import { lineReveal, staggerContainer, viewportOnce } from "@/lib/motion";
 import { useContent } from "@/lib/content-context";
 import { cn } from "@/lib/utils";
 
-const QUOTE_WORDS = [
-  "No", "es", "un", "mall.",
-  "Es", "el", "lugar", "donde",
-  "Santa", "Cruz", "se", "encuentra.",
-];
+const DEFAULT_QUOTE = "No es un mall. Es el lugar donde Santa Cruz se encuentra.";
 const GOLD_WORDS = new Set(["Santa", "Cruz"]);
 
 export function StorySection() {
   const { content } = useContent();
-  const settings = content.settings;
+  const { settings } = content;
+  const quote = settings.storyQuote || DEFAULT_QUOTE;
+  const QUOTE_WORDS = quote.split(/\s+/);
   const aboutText =
     settings.aboutText ||
     "Inaugurado el 30 de enero de 2014, Ventura Mall fue diseñado por el arquitecto Waldo Alborta como una ciudad bajo techo: moda, gastronomía, cine y entretenimiento en el corazón de Equipetrol Norte.";
@@ -52,9 +50,9 @@ export function StorySection() {
         className="absolute inset-0 h-full w-full"
         imgClassName="scale-[1.18]"
       />
-      <div className="absolute inset-0 bg-ink/70" aria-hidden />
+      <div className="absolute inset-0 bg-ink/40" aria-hidden />
       <div
-        className="absolute inset-0 bg-gradient-to-b from-ink/50 via-ink/30 to-ink/85"
+        className="absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink/60"
         aria-hidden
       />
       <GrainOverlay />

@@ -66,9 +66,9 @@ export function Visit() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
         <SectionHeading
-          eyebrow="VISITA"
-          title="Cómo llegar a Ventura Mall"
-          description="En el corazón de Equipetrol Norte. Parqueo amplio, acceso vehicular desde el 4to Anillo y peatonal desde Av. San Martín. Te esperamos todos los días."
+          eyebrow={settings.visitEyebrow || "VISITA"}
+          title={settings.visitTitle || "Cómo llegar a Ventura Mall"}
+          description={settings.visitDescription || "En el corazón de Equipetrol Norte. Parqueo amplio, acceso vehicular desde el 4to Anillo y peatonal desde Av. San Martín. Te esperamos todos los días."}
           dark
           accent="gold"
         />

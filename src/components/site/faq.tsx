@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 export function Faq() {
   const { content } = useContent();
+  const { settings } = content;
   const faqs = content.faqs;
   const [active, setActive] = useState<string>("Todas");
 
@@ -35,9 +36,9 @@ export function Faq() {
     <section id="faq" className="scroll-mt-20 bg-background py-20 lg:py-28">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="FAQ"
-          title="Todo lo que necesitas saber antes de venir"
-          description="Respuestas claras a las preguntas que más nos hacen. Si algo te queda en el aire, escríbenos más abajo."
+          eyebrow={settings.faqEyebrow || "FAQ"}
+          title={settings.faqTitle || "Todo lo que necesitas saber antes de venir"}
+          description={settings.faqDescription || "Respuestas claras a las preguntas que más nos hacen. Si algo te queda en el aire, escríbenos más abajo."}
           align="center"
           accent="red"
         />

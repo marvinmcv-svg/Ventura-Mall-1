@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Save, Loader2, Store as StoreIcon, Sparkles, Tag, CalendarDays, Image as ImageIcon, Film, HelpCircle, Star, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, Loader2, Store as StoreIcon, Sparkles, Tag, CalendarDays, Image as ImageIcon, Film, HelpCircle, Star, Search, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -272,16 +272,114 @@ export function FaqsEditor() {
   );
 }
 
-const SETTING_FIELDS: { key: string; label: string; type?: "text" | "textarea" }[] = [
-  { key: "siteName", label: "Nombre del sitio" }, { key: "tagline", label: "Eslogan" },
-  { key: "heroEyebrow", label: "Hero — texto superior" }, { key: "heroTitle", label: "Hero — título" },
-  { key: "heroSubtitle", label: "Hero — subtítulo", type: "textarea" },
-  { key: "aboutText", label: "Texto 'Acerca de'", type: "textarea" }, { key: "address", label: "Dirección" },
-  { key: "city", label: "Ciudad / País" }, { key: "phone", label: "Teléfono" }, { key: "email", label: "Email" },
-  { key: "lat", label: "Latitud" }, { key: "lng", label: "Longitud" }, { key: "inaugurated", label: "Inauguración" },
-  { key: "investment", label: "Inversión" }, { key: "area", label: "Área construida" }, { key: "architect", label: "Arquitecto" },
-  { key: "floors", label: "Plantas" }, { key: "instagram", label: "Instagram URL" }, { key: "facebook", label: "Facebook URL" },
-  { key: "twitter", label: "Twitter URL" }, { key: "foursquare", label: "Foursquare URL" },
+const SETTING_GROUPS: { title: string; icon: any; fields: { key: string; label: string; type?: "text" | "textarea" }[] }[] = [
+  {
+    title: "General", icon: StoreIcon,
+    fields: [
+      { key: "siteName", label: "Nombre del sitio" }, { key: "tagline", label: "Eslogan" },
+    ],
+  },
+  {
+    title: "Sección Hero (portada)", icon: Sparkles,
+    fields: [
+      { key: "heroEyebrow", label: "Texto superior (eyebrow)" }, { key: "heroTitle", label: "Título principal" },
+      { key: "heroSubtitle", label: "Subtítulo", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Historia (frase central)", icon: Sparkles,
+    fields: [
+      { key: "storyQuote", label: "Frase destacada", type: "textarea" },
+      { key: "aboutText", label: "Texto 'Acerca de'", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Tiendas", icon: StoreIcon,
+    fields: [
+      { key: "storesEyebrow", label: "Eyebrow" }, { key: "storesTitle", label: "Título" },
+      { key: "storesDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Experiencias", icon: Sparkles,
+    fields: [
+      { key: "experiencesEyebrow", label: "Eyebrow" }, { key: "experiencesTitle", label: "Título" },
+      { key: "experiencesDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Gastronomía", icon: Sparkles,
+    fields: [
+      { key: "diningEyebrow", label: "Eyebrow" }, { key: "diningTitle", label: "Título" },
+      { key: "diningDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Cine", icon: Sparkles,
+    fields: [
+      { key: "cinemaEyebrow", label: "Eyebrow" }, { key: "cinemaTitle", label: "Título" },
+      { key: "cinemaDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Eventos", icon: CalendarDays,
+    fields: [
+      { key: "eventsEyebrow", label: "Eyebrow" }, { key: "eventsTitle", label: "Título" },
+      { key: "eventsDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Galería", icon: ImageIcon,
+    fields: [
+      { key: "galleryEyebrow", label: "Eyebrow" }, { key: "galleryTitle", label: "Título" },
+      { key: "galleryDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Promociones", icon: Tag,
+    fields: [
+      { key: "promosEyebrow", label: "Eyebrow" }, { key: "promosTitle", label: "Título" },
+      { key: "promosDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Visita", icon: MapPin,
+    fields: [
+      { key: "visitEyebrow", label: "Eyebrow" }, { key: "visitTitle", label: "Título" },
+      { key: "visitDescription", label: "Descripción", type: "textarea" },
+      { key: "address", label: "Dirección" }, { key: "city", label: "Ciudad / País" },
+      { key: "phone", label: "Teléfono" }, { key: "email", label: "Email" },
+      { key: "lat", label: "Latitud" }, { key: "lng", label: "Longitud" },
+    ],
+  },
+  {
+    title: "Sección FAQ", icon: HelpCircle,
+    fields: [
+      { key: "faqEyebrow", label: "Eyebrow" }, { key: "faqTitle", label: "Título" },
+      { key: "faqDescription", label: "Descripción", type: "textarea" },
+    ],
+  },
+  {
+    title: "Sección Newsletter", icon: Sparkles,
+    fields: [
+      { key: "newsletterTitle", label: "Título" }, { key: "newsletterSubtitle", label: "Subtítulo", type: "textarea" },
+    ],
+  },
+  {
+    title: "Datos del mall", icon: StoreIcon,
+    fields: [
+      { key: "inaugurated", label: "Inauguración" }, { key: "investment", label: "Inversión" },
+      { key: "area", label: "Área construida" }, { key: "architect", label: "Arquitecto" },
+      { key: "floors", label: "Plantas" },
+    ],
+  },
+  {
+    title: "Redes sociales", icon: Sparkles,
+    fields: [
+      { key: "instagram", label: "Instagram URL" }, { key: "facebook", label: "Facebook URL" },
+      { key: "twitter", label: "Twitter URL" }, { key: "foursquare", label: "Foursquare URL" },
+    ],
+  },
 ];
 export function SettingsEditor() {
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -291,9 +389,29 @@ export function SettingsEditor() {
   const save = async () => { setSaving(true); try { const res = await fetch("/api/admin/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ settings }) }); const data = await res.json(); if (data?.ok) toast({ title: "Configuración guardada", description: `${data.updated} campos actualizados` }); else throw new Error(data?.error); } catch (e: any) { toast({ variant: "destructive", title: "Error", description: e.message }); } finally { setSaving(false); } };
   if (loading) return <EmptyState icon={Loader2} label="Cargando..." />;
   return (
-    <div className="space-y-5">
-      <div className="grid sm:grid-cols-2 gap-4">{SETTING_FIELDS.map((f) => <Field key={f.key} label={f.label}>{f.type === "textarea" ? <Textarea value={settings[f.key] || ""} onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })} rows={3} /> : <Input value={settings[f.key] || ""} onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })} />}</Field>)}</div>
-      <Field label="Hero — imagen"><MediaPicker label="" value={settings.heroImage || ""} onChange={(v) => setSettings({ ...settings, heroImage: v })} /></Field>
+    <div className="space-y-6">
+      {SETTING_GROUPS.map((group) => (
+        <div key={group.title} className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <group.icon className="h-4 w-4 text-primary" />
+            <h3 className="font-display font-bold text-sm text-ink">{group.title}</h3>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {group.fields.map((f) => (
+              <Field key={f.key} label={f.label}>
+                {f.type === "textarea" ? (
+                  <Textarea value={settings[f.key] || ""} onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })} rows={3} />
+                ) : (
+                  <Input value={settings[f.key] || ""} onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })} />
+                )}
+              </Field>
+            ))}
+          </div>
+          {group.title === "Sección Hero (portada)" && (
+            <div className="mt-4"><Field label="Imagen de fondo"><MediaPicker label="" value={settings.heroImage || ""} onChange={(v) => setSettings({ ...settings, heroImage: v })} /></Field></div>
+          )}
+        </div>
+      ))}
       <div className="sticky bottom-0 -mx-5 px-5 py-3 bg-background border-t border-border flex justify-end"><Button onClick={save} disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">{saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}Guardar configuración</Button></div>
     </div>
   );

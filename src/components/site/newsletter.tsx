@@ -15,6 +15,7 @@ import {
 
 export function Newsletter() {
   const { content } = useContent();
+  const { settings } = content;
   const subscriberCount = content.subscriberCount || 0;
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,10 +57,10 @@ export function Newsletter() {
           src="/images/ventura/real/boulevard-night.jpg"
           alt=""
           aria-hidden
-          className="h-full w-full object-cover opacity-40"
+          className="h-full w-full object-cover opacity-70"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/85 to-ink" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/60 to-ink/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/40 to-ink/80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/60 via-transparent to-ink/60" />
       </div>
       <GrainOverlay />
 
@@ -76,13 +77,13 @@ export function Newsletter() {
         </Reveal>
 
         <SplitText
-          text="Únete al club Ventura"
+          text={settings.newsletterTitle || "Únete al club Ventura"}
           className="mt-6 font-display font-bold tracking-tight text-balance text-4xl sm:text-5xl lg:text-6xl text-white leading-[0.98]"
         />
 
         <Reveal delay={0.15}>
           <p className="mt-5 text-base sm:text-lg text-white/75 text-pretty max-w-xl mx-auto leading-relaxed">
-            Recibe promociones exclusivas, estrenos y eventos antes que nadie.
+            {settings.newsletterSubtitle || "Recibe promociones exclusivas, estrenos y eventos antes que nadie."}
           </p>
         </Reveal>
 

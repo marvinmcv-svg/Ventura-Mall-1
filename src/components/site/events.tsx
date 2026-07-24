@@ -76,6 +76,7 @@ function getAccent(a?: string): Accent {
 
 export function Events() {
   const { content } = useContent();
+  const { settings } = content;
   const events = content.events;
   const mounted = useMounted();
 
@@ -94,9 +95,9 @@ export function Events() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="AGENDA"
-          title="Eventos que no te quieres perder"
-          description="Una cartelera curada de moda, música, cine y cultura en el corazón de Equipetrol. Reserva tu lugar antes de que se agote."
+          eyebrow={settings.eventsEyebrow || "AGENDA"}
+          title={settings.eventsTitle || "Eventos que no te quieres perder"}
+          description={settings.eventsDescription || "Una cartelera curada de moda, música, cine y cultura en el corazón de Equipetrol. Reserva tu lugar antes de que se agote."}
           className="mb-12 sm:mb-16"
         />
 

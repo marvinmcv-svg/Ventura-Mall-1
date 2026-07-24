@@ -17,6 +17,18 @@ const ALLOWED_SETTING_KEYS = new Set([
   "siteName", "tagline", "heroEyebrow", "heroTitle", "heroSubtitle", "heroImage",
   "aboutText", "address", "city", "phone", "email", "instagram", "facebook", "twitter", "foursquare",
   "lat", "lng", "inaugurated", "investment", "area", "architect", "floors", "marqueeItems",
+  // Section copy (eyebrow / title / description) — editable from admin
+  "storesEyebrow", "storesTitle", "storesDescription",
+  "experiencesEyebrow", "experiencesTitle", "experiencesDescription",
+  "diningEyebrow", "diningTitle", "diningDescription",
+  "cinemaEyebrow", "cinemaTitle", "cinemaDescription",
+  "eventsEyebrow", "eventsTitle", "eventsDescription",
+  "galleryEyebrow", "galleryTitle", "galleryDescription",
+  "promosEyebrow", "promosTitle", "promosDescription",
+  "visitEyebrow", "visitTitle", "visitDescription",
+  "faqEyebrow", "faqTitle", "faqDescription",
+  "newsletterTitle", "newsletterSubtitle",
+  "storyQuote",
 ]);
 const MAX_VALUE_LEN = 5000;
 

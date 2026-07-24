@@ -31,6 +31,7 @@ const accentMarker: Record<string, string> = {
 
 export function Experiences() {
   const { content } = useContent();
+  const { settings } = content;
   const experiences = content.experiences;
   if (!experiences.length) return null;
 
@@ -39,9 +40,9 @@ export function Experiences() {
       {/* Header */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-16">
         <SectionHeading
-          eyebrow="EXPERIENCIAS"
-          title="Experiencias que van más allá del shopping"
-          description="Desde una sala IMAX hasta una noche en el Boulevard Gourmet. Ventura Mall es un destino para vivir momentos inolvidables, no solo para comprar."
+          eyebrow={settings.experiencesEyebrow || "EXPERIENCIAS"}
+          title={settings.experiencesTitle || "Experiencias que van más allá del shopping"}
+          description={settings.experiencesDescription || "Desde una sala IMAX hasta una noche en el Boulevard Gourmet. Ventura Mall es un destino para vivir momentos inolvidables, no solo para comprar."}
           accent="red"
         />
       </div>

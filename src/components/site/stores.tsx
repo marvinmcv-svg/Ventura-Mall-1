@@ -254,6 +254,7 @@ function StoreCard({ store, onOpenGallery }: { store: StoreItem; onOpenGallery: 
 export function Stores() {
   const { content } = useContent();
   const stores = content.stores;
+  const { settings } = content;
   const [active, setActive] = useState<string>("Todas");
   const [query, setQuery] = useState("");
   const [galleryStore, setGalleryStore] = useState<StoreItem | null>(null);
@@ -293,9 +294,9 @@ export function Stores() {
     <section id="tiendas" className="py-20 sm:py-28 scroll-mt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Directorio de tiendas"
-          title="Tus marcas favoritas, todas en un solo lugar"
-          description="Más de 150 marcas de moda, gastronomía, entretenimiento y tecnología. Filtra por categoría y empezá a recorrer."
+          eyebrow={settings.storesEyebrow || "Directorio de tiendas"}
+          title={settings.storesTitle || "Tus marcas favoritas, todas en un solo lugar"}
+          description={settings.storesDescription || "Más de 150 marcas de moda, gastronomía, entretenimiento y tecnología. Filtra por categoría y empezá a recorrer."}
           accent="red"
         />
 

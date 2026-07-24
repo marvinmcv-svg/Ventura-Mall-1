@@ -34,6 +34,7 @@ const cinemaBackdrops = [
 
 export function Cinema() {
   const { content } = useContent();
+  const { settings } = content;
   const movies = content.movies;
   if (!movies.length) return null;
 
@@ -56,18 +57,17 @@ export function Cinema() {
             <Reveal>
               <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-editorial text-gold">
                 <Clapperboard className="h-3.5 w-3.5" />
-                Cinemark Premier
+                {settings.cinemaEyebrow || "Cinemark Premier"}
               </div>
             </Reveal>
             <SplitText
-              text="La cartelera del cine más grande de Bolivia"
+              text={settings.cinemaTitle || "La cartelera del cine más grande de Bolivia"}
               delay={0.05}
               className="mt-5 font-display font-bold tracking-tight text-balance text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[0.95] text-white"
             />
             <Reveal delay={0.2}>
               <p className="mt-5 text-base sm:text-lg text-white/70 max-w-2xl text-pretty">
-                13 salas, 4 VIP y la pantalla IMAX de 16m × 21m. El séptimo arte
-                como nunca antes lo viviste.
+                {settings.cinemaDescription || "13 salas, 4 VIP y la pantalla IMAX de 16m × 21m. El séptimo arte como nunca antes lo viviste."}
               </p>
             </Reveal>
           </div>
@@ -102,7 +102,7 @@ export function Cinema() {
                 range={60}
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent" />
 
               {/* Featured content */}

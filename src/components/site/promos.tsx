@@ -56,6 +56,7 @@ function getAccent(a?: string): Accent {
 
 export function Promos() {
   const { content } = useContent();
+  const { settings } = content;
   const promos = content.promos;
   if (!promos.length) return null;
 
@@ -70,9 +71,9 @@ export function Promos() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="PROMOCIONES"
-          title="Promociones que no te puedes perder"
-          description="Ofertas, descuentos y experiencias que hacen que cualquier día sea el indicado para venir a Ventura."
+          eyebrow={settings.promosEyebrow || "PROMOCIONES"}
+          title={settings.promosTitle || "Promociones que no te puedes perder"}
+          description={settings.promosDescription || "Ofertas, descuentos y experiencias que hacen que cualquier día sea el indicado para venir a Ventura."}
           className="mb-12 sm:mb-16"
         />
 

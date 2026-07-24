@@ -31,6 +31,7 @@ const dishes: Dish[] = [
 
 export function Dining() {
   const { content } = useContent();
+  const { settings } = content;
   const restaurants = content.stores.filter((s) => s.category === "Gastronomía");
   const railRef = useRef<HTMLDivElement>(null);
 
@@ -60,9 +61,9 @@ export function Dining() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           <SectionHeading
-            eyebrow="GASTRONOMÍA"
-            title="Un mundo de sabores te espera"
-            description="Desde un café colombiano hasta una cena en el Boulevard Gourmet. Un recorrido cinematográfico por las propuestas que hacen de Ventura un destino culinario."
+            eyebrow={settings.diningEyebrow || "GASTRONOMÍA"}
+            title={settings.diningTitle || "Un mundo de sabores te espera"}
+            description={settings.diningDescription || "Desde un café colombiano hasta una cena en el Boulevard Gourmet. Un recorrido cinematográfico por las propuestas que hacen de Ventura un destino culinario."}
             dark
             accent="gold"
           />
@@ -111,7 +112,7 @@ export function Dining() {
                 loading={i < 2 ? "eager" : "lazy"}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.1s] ease-out group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/15 to-transparent" />
 
               {/* Index marker */}
               <span className="absolute top-4 right-4 font-mono text-[0.7rem] text-white/40">
