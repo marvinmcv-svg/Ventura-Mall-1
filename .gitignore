@@ -74,3 +74,5 @@ Thumbs.db
 /upload/
 /download/
 public/robots.txt
+db/custom.db
+prisma/db/
