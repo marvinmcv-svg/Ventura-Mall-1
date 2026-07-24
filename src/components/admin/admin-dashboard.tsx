@@ -50,6 +50,12 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<Record<string, number> | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // Close the portal and navigate to the public site
+  const handleClose = () => {
+    closeAdmin();
+    window.location.href = "/";
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => { try { const res = await fetch("/api/admin/stats", { cache: "no-store" }); const data = await res.json(); if (!cancelled && data?.ok) setStats(data.stats); } catch {} })();
@@ -63,14 +69,14 @@ export function AdminDashboard() {
     <div className="flex h-full w-full bg-muted/30 overflow-hidden">
       <CommandPalette onNavigate={(s) => nav(s as Section)} />
       <aside className="hidden lg:flex w-60 shrink-0 flex-col bg-ink text-white">
-        <SidebarContent section={section} nav={nav} stats={stats} username={username} onLogout={handleLogout} closeAdmin={closeAdmin} />
+        <SidebarContent section={section} nav={nav} stats={stats} username={username} onLogout={handleLogout} closeAdmin={handleClose} />
       </aside>
       <AnimatePresence>
         {sidebarOpen && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-ink/60 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
             <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-ink text-white flex flex-col lg:hidden">
-              <SidebarContent section={section} nav={nav} stats={stats} username={username} onLogout={handleLogout} closeAdmin={closeAdmin} onClose={() => setSidebarOpen(false)} />
+              <SidebarContent section={section} nav={nav} stats={stats} username={username} onLogout={handleLogout} closeAdmin={handleClose} onClose={() => setSidebarOpen(false)} />
             </motion.aside>
           </>
         )}
@@ -86,7 +92,7 @@ export function AdminDashboard() {
               <Command className="h-3.5 w-3.5" /><span>Buscar</span><kbd className="ml-1 inline-flex items-center rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.6rem]">⌘K</kbd>
             </button>
             <Button variant="ghost" size="sm" onClick={() => { setStats(null); setRefreshKey((k) => k + 1); setTimeout(async () => { try { const res = await fetch("/api/admin/stats", { cache: "no-store" }); const data = await res.json(); if (data?.ok) setStats(data.stats); } catch {} }, 100); }} title="Recargar"><RefreshCw className="h-4 w-4" /><span className="hidden sm:inline ml-1.5">Recargar</span></Button>
-            <Button variant="ghost" size="sm" onClick={closeAdmin} title="Ver sitio"><ExternalLink className="h-4 w-4" /><span className="hidden sm:inline ml-1.5">Ver sitio</span></Button>
+            <Button variant="ghost" size="sm" onClick={handleClose} title="Ver sitio"><ExternalLink className="h-4 w-4" /><span className="hidden sm:inline ml-1.5">Ver sitio</span></Button>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive hover:text-destructive"><LogOut className="h-4 w-4" /><span className="hidden sm:inline ml-1.5">Salir</span></Button>
           </div>
         </header>

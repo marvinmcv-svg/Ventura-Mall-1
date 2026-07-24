@@ -6,7 +6,7 @@ import { AdminLogin } from "./admin-login";
 import { AdminDashboard } from "./admin-dashboard";
 
 export function AdminPortal() {
-  const { open, authed, checkSession, openAdmin } = useAdmin();
+  const { open, authed, checkSession } = useAdmin();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
@@ -21,14 +21,7 @@ export function AdminPortal() {
     if (!open) { const t = setTimeout(() => setChecked(false), 0); return () => clearTimeout(t); }
   }, [open]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "a" || e.key === "A")) { e.preventDefault(); openAdmin(); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [openAdmin]);
-
+  // Lock body scroll when the portal is open
   useEffect(() => {
     if (open) { const prev = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = prev; }; }
   }, [open]);

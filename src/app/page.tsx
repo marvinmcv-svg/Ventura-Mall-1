@@ -16,8 +16,6 @@ import { Newsletter } from "@/components/site/newsletter";
 import { SiteFooter } from "@/components/site/footer";
 import { ScrollProgress } from "@/components/site/scroll-progress";
 import { CustomCursor } from "@/components/site/primitives";
-import { AdminPortal } from "@/components/admin/admin-portal";
-import { AdminTrigger } from "@/components/admin/admin-trigger";
 import { ClientContentProvider } from "@/components/site/client-content-provider";
 import { PageTracker } from "@/components/site/page-tracker";
 
@@ -46,8 +44,6 @@ export default function Home() {
           <Newsletter />
         </main>
         <SiteFooter />
-        <AdminTrigger />
-        <AdminPortal />
       </div>
     </ClientContentProvider>
   );
