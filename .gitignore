@@ -68,7 +68,6 @@ server.log
 Thumbs.db
 
 # Zscripts runtime
-/.zscripts/
 
 # Tool artifacts
 /tool-results/
